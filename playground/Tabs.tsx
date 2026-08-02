@@ -8,9 +8,15 @@ export function Tabs() {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
   function onKeyDown(e: React.KeyboardEvent) {
-    // TODO 1: if ArrowRight -> next tab index (wrap with % TABS.length),
-    //         if ArrowLeft  -> previous (wrap),
-    //         then setActive(next) AND refs.current[next]?.focus()
+    if (e.key === "ArrowRight") {
+      const next = (active + 1) % TABS.length;
+      setActive(next);
+      refs.current[next]?.focus();
+    } else if (e.key === "ArrowLeft") {
+      const next = (active - 1 + TABS.length) % TABS.length;
+      setActive(next);
+      refs.current[next]?.focus();
+    }
   }
 
   return (
@@ -24,7 +30,8 @@ export function Tabs() {
             role="tab"
             id={`tab-${i}`}
             aria-controls={`panel-${i}`}
-            // TODO 2: aria-selected and roving tabIndex based on i === active
+            aria-selected={i === active}
+            tabIndex={i === active ? 0 : -1}
             onClick={() => setActive(i)}
             className="border-b-2 px-4 py-2 aria-selected:border-[#A3263B] aria-selected:font-semibold"
           >
