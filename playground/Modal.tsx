@@ -8,20 +8,34 @@ export function Modal() {
 
   useEffect(() => {
     if (open) {
-      // TODO 1: move focus to the first focusable element inside dialogRef
+      dialogRef.current?.querySelector<HTMLElement>("button")?.focus();
     } else {
-      // TODO 2: return focus to triggerRef
+      triggerRef.current?.focus();
     }
   }, [open]);
 
   function onKeyDown(e: React.KeyboardEvent) {
-    // TODO 3: if Escape -> setOpen(false)
-    // TODO 4 (focus trap): if Tab, get all focusable elements inside the
-    // dialog (dialogRef.current.querySelectorAll<HTMLElement>(
-    //   'button, [href], input, select, textarea')),
-    // and if focus is on the last one and Tab pressed -> preventDefault,
-    // focus the first; if on the first and Shift+Tab -> preventDefault,
-    // focus the last.
+    if (e.key === "Escape") {
+      setOpen(false);
+    }
+
+    if (e.key === "Tab") {
+      const els = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea'
+      );
+      if (!els || els.length === 0) return;
+
+      const first = els[0];
+      const last = els[els.length - 1];
+
+      if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    }
   }
 
   return (
